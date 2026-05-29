@@ -95,6 +95,6 @@ All 8 weeks of development are complete. See [BUILD_PROGRESS.md](BUILD_PROGRESS.
 - [ ] Create AdMob account → replace test IDs with real App ID and unit IDs
 - [ ] Update `applicationId` from `com.example.brain_twist` to your own package name
 - [ ] Take 8 screenshots on device/emulator
-- [ ] Host privacy policy URL (required by Play Store)
+- [x] Privacy policy hosted at: https://balumahendra592.github.io/braintwist/privacy_policy/
 - [ ] Pay $25 Google Play developer fee (one-time)
 - [ ] Upload AAB to Play Console
