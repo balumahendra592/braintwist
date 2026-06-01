@@ -59,9 +59,11 @@ class _HomeScreenState extends State<HomeScreen> {
     int easyStars   = 0;
     int mediumStars = 0;
     int hardStars   = 0;
-    for (int i = 0;  i < 25; i++) { easyStars   += GameStorage.getLevelStars(i); }
-    for (int i = 25; i < 50; i++) { mediumStars += GameStorage.getLevelStars(i); }
-    for (int i = 50; i < 75; i++) { hardStars   += GameStorage.getLevelStars(i); }
+    int expertStars = 0;
+    for (int i = 0;  i < 25;  i++) { easyStars   += GameStorage.getLevelStars(i); }
+    for (int i = 25; i < 50;  i++) { mediumStars += GameStorage.getLevelStars(i); }
+    for (int i = 50; i < 75;  i++) { hardStars   += GameStorage.getLevelStars(i); }
+    for (int i = 75; i < 100; i++) { expertStars += GameStorage.getLevelStars(i); }
 
     return Scaffold(
       backgroundColor: const Color(0xFF1B0A3A),
@@ -146,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // ── Chapter cards ─────────────────────────
             Expanded(
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
@@ -185,6 +187,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       bg: const Color(0xFF7F1D1D),
                       startLevel: 50,
                     ),
+                    const SizedBox(height: 12),
+                    _chapterCard(
+                      context,
+                      emoji: '🧬',
+                      title: 'Expert Zone',
+                      sub: 'Levels 76–100',
+                      stars: expertStars,
+                      maxStars: 75,
+                      color: const Color(0xFF7C3AED),
+                      bg: const Color(0xFF3B0764),
+                      startLevel: 75,
+                    ),
+                    const SizedBox(height: 12),
                   ],
                 ),
               ),

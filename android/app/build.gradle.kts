@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -5,9 +7,13 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val keyPropertiesFile = rootProject.file("key.properties")
+val keyProperties = Properties().apply {
+    if (keyPropertiesFile.exists()) load(keyPropertiesFile.inputStream())
+}
+
 android {
-    // Replace with your own package name (e.g. com.yourname.braintwist)
-    namespace = "com.example.brain_twist"
+    namespace = "com.balumahendra592.braintwist"
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
@@ -24,19 +30,16 @@ android {
     }
 
     signingConfigs {
-        // Release signing — fill in keystore details before running `flutter build appbundle`
-        // See PLAY_STORE_GUIDE.md for keystore generation steps
         create("release") {
-            storeFile = file(System.getenv("KEYSTORE_PATH") ?: "keystore.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
-            keyAlias = System.getenv("KEY_ALIAS") ?: ""
-            keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+            storeFile = keyProperties["storeFile"]?.let { file(it) }
+            storePassword = keyProperties["storePassword"] as String?
+            keyAlias = keyProperties["keyAlias"] as String?
+            keyPassword = keyProperties["keyPassword"] as String?
         }
     }
 
     defaultConfig {
-        // Replace with your own unique Application ID
-        applicationId = "com.example.brain_twist"
+        applicationId = "com.balumahendra592.braintwist"
         minSdk = 21
         targetSdk = 35
         versionCode = flutter.versionCode
@@ -51,7 +54,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = if (System.getenv("KEYSTORE_PATH") != null)
+            signingConfig = if (keyPropertiesFile.exists())
                 signingConfigs.getByName("release")
             else
                 signingConfigs.getByName("debug")

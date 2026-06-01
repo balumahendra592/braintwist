@@ -93,7 +93,7 @@ All 8 weeks of development are complete. See [BUILD_PROGRESS.md](BUILD_PROGRESS.
 - [ ] Design app icon 512×512 PNG → `assets/icon/app_icon.png` → run `dart run flutter_launcher_icons`
 - [ ] Generate release keystore (`keytool -genkey ...`)
 - [ ] Create AdMob account → replace test IDs with real App ID and unit IDs
-- [ ] Update `applicationId` from `com.example.brain_twist` to your own package name
+- [x] Package name set to `com.balumahendra592.braintwist` across all Android files
 - [ ] Take 8 screenshots on device/emulator
 - [x] Privacy policy hosted at: https://balumahendra592.github.io/braintwist/privacy_policy/
 - [ ] Pay $25 Google Play developer fee (one-time)

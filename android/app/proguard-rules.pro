@@ -11,7 +11,7 @@
 -keep class kotlinx.** { *; }
 
 # Keep app entry points
--keep class com.example.brain_twist.** { *; }
+-keep class com.balumahendra592.braintwist.** { *; }
 
 # Play Core (Flutter deferred components — not used but referenced by flutter_embedding)
 -dontwarn com.google.android.play.core.splitcompat.SplitCompatApplication

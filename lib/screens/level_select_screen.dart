@@ -13,9 +13,10 @@ class LevelSelectScreen extends StatefulWidget {
 
 class _LevelSelectScreenState extends State<LevelSelectScreen> {
   static const _chapters = [
-    {'title': '🌱 Easy Warm-up',   'range': '1–25',  'color': Color(0xFF059669), 'start': 0,  'end': 25},
-    {'title': '🔥 Getting Tricky', 'range': '26–50', 'color': Color(0xFFD97706), 'start': 25, 'end': 50},
-    {'title': '💥 Mind Benders',   'range': '51–75', 'color': Color(0xFFDC2626), 'start': 50, 'end': 75},
+    {'title': '🌱 Easy Warm-up',   'range': '1–25',   'color': Color(0xFF059669), 'start': 0,  'end': 25},
+    {'title': '🔥 Getting Tricky', 'range': '26–50',  'color': Color(0xFFD97706), 'start': 25, 'end': 50},
+    {'title': '💥 Mind Benders',   'range': '51–75',  'color': Color(0xFFDC2626), 'start': 50, 'end': 75},
+    {'title': '🧬 Expert Zone',    'range': '76–100', 'color': Color(0xFF7C3AED), 'start': 75, 'end': 100},
   ];
 
   @override
