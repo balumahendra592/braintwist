@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/game_storage.dart';
+import '../services/notification_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -16,8 +17,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _sound     = GameStorage.isSoundEnabled();
-    _music     = GameStorage.isMusicEnabled();
+    _sound = GameStorage.isSoundEnabled();
+    _music = GameStorage.isMusicEnabled();
     _vibration = GameStorage.isVibrationEnabled();
   }
 
@@ -35,8 +36,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel',
-                style: TextStyle(color: Colors.white54)),
+            child:
+                const Text('Cancel', style: TextStyle(color: Colors.white54)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -58,8 +59,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         );
         setState(() {
-          _sound     = GameStorage.isSoundEnabled();
-          _music     = GameStorage.isMusicEnabled();
+          _sound = GameStorage.isSoundEnabled();
+          _music = GameStorage.isMusicEnabled();
           _vibration = GameStorage.isVibrationEnabled();
         });
       }
@@ -147,13 +148,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: Color(0xFFDC2626)),
               title: const Text('Reset All Progress',
                   style: TextStyle(
-                      color: Color(0xFFDC2626),
-                      fontWeight: FontWeight.w600)),
+                      color: Color(0xFFDC2626), fontWeight: FontWeight.w600)),
               subtitle: const Text('Erase all data and start over',
                   style: TextStyle(color: Colors.white38, fontSize: 12)),
               onTap: _confirmReset,
             ),
           ),
+
+          const SizedBox(height: 24),
+
+          //── Debug (remove before release) ─────────
+          _sectionLabel('Debug'),
+          _tile(
+            icon: Icons.notifications_active_rounded,
+            label: 'Test Local Notification',
+            onTap: () async {
+              await NotificationService.testLocalNotification();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content:
+                        Text('Local notification sent — check status bar.'),
+                    backgroundColor: Color(0xFF2D1B4E),
+                  ),
+                );
+              }
+            },
+          ),
+          // _tile(
+          //   icon: Icons.key_rounded,
+          //   label: 'Print FCM Token',
+          //   onTap: () async {
+          //     final token = await NotificationService.getFcmToken();
+          //     if (mounted) {
+          //       ScaffoldMessenger.of(context).showSnackBar(
+          //         SnackBar(
+          //           content: Text(token ?? 'No token — check Firebase setup'),
+          //           backgroundColor: const Color(0xFF2D1B4E),
+          //           duration: const Duration(seconds: 6),
+          //         ),
+          //       );
+          //     }
+          //   },
+          // ),
 
           const SizedBox(height: 32),
 
@@ -196,8 +233,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         child: SwitchListTile(
           secondary: Icon(icon, color: const Color(0xFF7C3AED)),
-          title:
-              Text(label, style: const TextStyle(color: Colors.white)),
+          title: Text(label, style: const TextStyle(color: Colors.white)),
           value: value,
           onChanged: onChanged,
           activeColor: const Color(0xFF7C3AED),
@@ -217,10 +253,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         child: ListTile(
           leading: Icon(icon, color: const Color(0xFF7C3AED)),
-          title: Text(label,
-              style: const TextStyle(color: Colors.white)),
-          trailing: const Icon(Icons.chevron_right_rounded,
-              color: Colors.white38),
+          title: Text(label, style: const TextStyle(color: Colors.white)),
+          trailing:
+              const Icon(Icons.chevron_right_rounded, color: Colors.white38),
           onTap: onTap,
         ),
       );

@@ -10,7 +10,12 @@ class GameStorage {
   static const _keySoundEnabled    = 'sound_enabled';
   static const _keyMusicEnabled    = 'music_enabled';
   static const _keyVibrationEnabled = 'vibration_enabled';
-  static const _keySessionCount    = 'session_count';
+  static const _keySessionCount      = 'session_count';
+  static const _keyLastPlayDate      = 'last_play_date';
+  static const _keyCurrentStreak     = 'current_streak';
+  static const _keyBestStreak        = 'best_streak';
+  static const _keyHintFreeLevels    = 'hint_free_levels';
+  static const _keyTotalCoinsEarned  = 'total_coins_earned';
 
   // ── Init ────────────────────────────────────────
   static Future<void> init() async {
@@ -20,10 +25,43 @@ class GameStorage {
       await _prefs!.setInt(_keyCoins, 50);
     }
     // Increment session count (used for rate-us prompt)
-    await _prefs!.setInt(
-      _keySessionCount, getSessionCount() + 1,
-    );
+    await _prefs!.setInt(_keySessionCount, getSessionCount() + 1);
+    // Update daily streak
+    await _updateStreak();
   }
+
+  // ── Streak ──────────────────────────────────────
+  static int getCurrentStreak() => _prefs!.getInt(_keyCurrentStreak) ?? 0;
+  static int getBestStreak()    => _prefs!.getInt(_keyBestStreak) ?? 0;
+
+  static Future<int> _updateStreak() async {
+    final today = _dateStr(DateTime.now());
+    final last  = _prefs!.getString(_keyLastPlayDate) ?? '';
+    if (last == today) return getCurrentStreak(); // already played today
+
+    final current = getCurrentStreak();
+    final yesterday = _dateStr(DateTime.now().subtract(const Duration(days: 1)));
+    final newStreak = last == yesterday ? current + 1 : 1;
+
+    await _prefs!.setString(_keyLastPlayDate, today);
+    await _prefs!.setInt(_keyCurrentStreak, newStreak);
+    if (newStreak > getBestStreak()) {
+      await _prefs!.setInt(_keyBestStreak, newStreak);
+    }
+    return newStreak;
+  }
+
+  static String _dateStr(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  // ── Hint-free level counter ──────────────────────
+  static int getHintFreeLevels() => _prefs!.getInt(_keyHintFreeLevels) ?? 0;
+
+  static Future<void> incrementHintFreeLevels() async =>
+      _prefs!.setInt(_keyHintFreeLevels, getHintFreeLevels() + 1);
+
+  // ── Total coins earned (lifetime) ───────────────
+  static int getTotalCoinsEarned() => _prefs!.getInt(_keyTotalCoinsEarned) ?? 0;
 
   // ── Levels ──────────────────────────────────────
   static int getCompletedLevels() =>
@@ -59,8 +97,10 @@ class GameStorage {
   // ── Coins ───────────────────────────────────────
   static int getCoins() => _prefs!.getInt(_keyCoins) ?? 50;
 
-  static Future<void> addCoins(int amount) async =>
-      await _prefs!.setInt(_keyCoins, getCoins() + amount);
+  static Future<void> addCoins(int amount) async {
+    await _prefs!.setInt(_keyCoins, getCoins() + amount);
+    await _prefs!.setInt(_keyTotalCoinsEarned, getTotalCoinsEarned() + amount);
+  }
 
   static Future<bool> spendCoins(int amount) async {
     if (getCoins() < amount) return false;

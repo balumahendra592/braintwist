@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../services/ad_manager.dart';
 import '../services/game_storage.dart';
+import '../services/review_service.dart';
+import '../services/achievement_service.dart';
+import '../services/analytics_service.dart';
+import '../services/share_service.dart';
 
 class ResultOverlay extends StatefulWidget {
   final int stars;
@@ -36,6 +40,12 @@ class _ResultOverlayState extends State<ResultOverlay>
     _ctrl.forward();
     // Fire interstitial every 3 completed levels
     AdManager.onLevelComplete();
+    // Request in-app review at milestone levels
+    ReviewService.maybeRequestReview(
+      completedLevel: widget.levelIndex + 1,
+      sessionCount: GameStorage.getSessionCount(),
+    );
+    _checkAchievements();
   }
 
   @override
@@ -45,6 +55,34 @@ class _ResultOverlayState extends State<ResultOverlay>
   }
 
   bool get _hasNext => widget.levelIndex + 1 < widget.totalLevels;
+
+  Future<void> _checkAchievements() async {
+    final newly = await AchievementService.checkAndUnlock(
+      levelIndex: widget.levelIndex,
+      stars: widget.stars,
+      hintsUsed: 0, // stars already reflect hint usage
+    );
+    for (final a in newly) {
+      AnalyticsService.logAchievement(a.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${a.emoji} Achievement unlocked: ${a.title}!'),
+            backgroundColor: const Color(0xFF3B0764),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
+  void _onShare() {
+    AnalyticsService.logShare();
+    ShareService.shareResult(
+      levelNumber: widget.levelIndex + 1,
+      stars: widget.stars,
+    );
+  }
 
   void _onWatchAd() {
     if (!AdManager.isRewardedReady) {
@@ -198,6 +236,27 @@ class _ResultOverlayState extends State<ResultOverlay>
                                 fontWeight: FontWeight.w800)),
                       ),
                     ),
+
+                  const SizedBox(height: 10),
+
+                  // Share result
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF10B981),
+                        side: const BorderSide(color: Color(0xFF10B981)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      icon: const Text('📤', style: TextStyle(fontSize: 16)),
+                      label: const Text('Share Result',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w600)),
+                      onPressed: _onShare,
+                    ),
+                  ),
 
                   const SizedBox(height: 10),
 

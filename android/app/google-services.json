@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "822857102811",
+    "project_id": "braintwist-6917e",
+    "storage_bucket": "braintwist-6917e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822857102811:android:cf747cd974a85f169123fe",
+        "android_client_info": {
+          "package_name": "com.balumahendra592.braintwist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuRtr6YS5oh9xDioREpzjTjaLPrHU641s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../services/game_storage.dart';
+import '../services/achievement_service.dart';
 import '../data/puzzle_repository.dart';
 import 'level_select_screen.dart';
 import 'settings_screen.dart';
+import 'achievements_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,38 +17,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _maybeShowRateUs();
-  }
-
-  void _maybeShowRateUs() {
-    if (GameStorage.getSessionCount() == 5) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            backgroundColor: const Color(0xFF2D1B4E),
-            title: const Text('Enjoying Brain Twist? 🧠',
-                style: TextStyle(color: Colors.white)),
-            content: const Text(
-              'Rate us 5 stars on the Play Store — it helps us make more puzzles!',
-              style: TextStyle(color: Color(0xFFB39DDB)),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Later', style: TextStyle(color: Colors.white54)),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF7C3AED)),
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Rate Now ⭐'),
-              ),
-            ],
-          ),
-        );
-      });
-    }
   }
 
   @override
@@ -55,6 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final coins     = GameStorage.getCoins();
     final score     = GameStorage.getTotalScore();
     final total     = PuzzleRepository.totalCount;
+    final streak    = GameStorage.getCurrentStreak();
+    final achCount  = AchievementService.unlockedCount;
 
     int easyStars   = 0;
     int mediumStars = 0;
@@ -144,7 +116,43 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
+
+            // ── Streak + Achievements row ─────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _statCard(
+                      emoji: '🔥',
+                      label: '$streak Day Streak',
+                      sub: 'Best: ${GameStorage.getBestStreak()}d',
+                      color: const Color(0xFFD97706),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const AchievementsScreen()),
+                      ).then((_) => setState(() {})),
+                      child: _statCard(
+                        emoji: '🏆',
+                        label: '$achCount / ${AchievementService.all.length}',
+                        sub: 'Achievements',
+                        color: const Color(0xFF7C3AED),
+                        tappable: true,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
 
             // ── Chapter cards ─────────────────────────
             Expanded(
@@ -247,6 +255,45 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  Widget _statCard({
+    required String emoji,
+    required String label,
+    required String sub,
+    required Color color,
+    bool tappable = false,
+  }) =>
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withValues(alpha: 0.35)),
+        ),
+        child: Row(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 22)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label,
+                      style: TextStyle(
+                          color: color,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13)),
+                  Text(sub,
+                      style: const TextStyle(
+                          color: Colors.white38, fontSize: 11)),
+                ],
+              ),
+            ),
+            if (tappable)
+              Icon(Icons.chevron_right_rounded, color: color, size: 18),
+          ],
+        ),
+      );
 
   Widget _chip(IconData icon, String label, Color color) => Container(
         padding:
